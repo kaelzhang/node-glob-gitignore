@@ -14,7 +14,7 @@
 
 # glob-gitignore
 
-<!-- description -->
+Extends [`glob`](https://www.npmjs.com/package/glob) with support for filtering files according to gitignore rules and exposes an optional Promise API
 
 ## Install
 
@@ -25,7 +25,25 @@ $ npm install glob-gitignore --save
 ## Usage
 
 ```js
-const glob_gitignore = require('glob-gitignore')
+const {
+  glob
+} = require('glob-gitignore')
+
+// The usage of glob-gitignore is much the same as `node-glob`
+glob('**', {
+  cwd: '/path/to',
+
+  // Except that options.ignore accepts an array of gitignore rules,
+  // or a gitignore rule,
+  // or an `ignore` instance.
+  ignore: '*.bak'
+})
+
+// And glob-gitignore returns a promise
+// if there is no `callback` passed into function `glob`
+.then(files => {
+  console.log(files)
+})
 ```
 
 ## License
