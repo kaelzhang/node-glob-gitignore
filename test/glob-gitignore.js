@@ -2,7 +2,7 @@ import test from 'ava'
 import {
   glob,
   sync
-} from '..'
+} from '../src'
 
 import path from 'path'
 

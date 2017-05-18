@@ -6,7 +6,7 @@
   "module": "src/index.js",
   "scripts": {
     "build": "babel src --out-dir lib",
-    "test": "npm run build && node --harmony ./node_modules/.bin/ava --verbose --timeout=10s",
+    "test": "node --harmony ./node_modules/.bin/ava --verbose --timeout=10s",
     "prepublish": "npm run build"
   },
   "files": [
