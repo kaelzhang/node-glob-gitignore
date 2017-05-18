@@ -12,6 +12,7 @@ test('sync', t => {
   const found = sync('**', {
     cwd,
     ignore: [
+      'a',
       '*.js',
       '!b.js'
     ]

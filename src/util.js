@@ -4,8 +4,14 @@ export const IGNORE = typeof Symbol === 'function'
 
 
 import ignore from 'ignore'
+import path from 'path'
 
-export function createShouldIgnore (ignores) {
+function relative (abs, cwd) {
+  return path.relative(cwd, abs)
+}
+
+
+export function createShouldIgnore (ignores, cwd) {
   if (!ignores) {
     return
   }
@@ -15,9 +21,18 @@ export function createShouldIgnore (ignores) {
   }
 
   const ig = ignore().add(ignores)
+  const filter = ig.createFilter()
 
   return {
-    ignore: filepath => ig.ignores(filepath),
-    filter: ig.createFilter()
+    ignore: filepath => {
+      filepath = relative(filepath, cwd)
+      if (!filepath) {
+        return false
+      }
+
+      return !filter(filepath)
+    },
+
+    filter
   }
 }

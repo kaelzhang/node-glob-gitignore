@@ -19,7 +19,7 @@ Extends [`glob`](https://www.npmjs.com/package/glob) with support for filtering 
 ## Install
 
 ```sh
-$ npm install glob-gitignore --save
+$ npm i glob-gitignore --save
 ```
 
 ## Usage

@@ -3,13 +3,10 @@ import {
 } from 'glob'
 
 import inherits from 'util.inherits'
-
-
-
-
-
-
-
+import {
+  IGNORE,
+  createShouldIgnore
+} from './util'
 
 
 // Subclass of `glob.GlobSync`
@@ -28,6 +25,11 @@ function _Glob (patterns, options, callback, shouldIgnore) {
 }
 
 inherits(_Glob, Glob)
+
+
+_Glob.prototype._readdir = function (abs, inGlobStar, cb) {
+
+}
 
 
 export function glob (patterns, options = {}, callback) {
@@ -57,9 +59,4 @@ export function glob (patterns, options = {}, callback) {
       resolve(files)
     })
   })
-}
-
-
-export function sync (patterns, options) {
-
 }

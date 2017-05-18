@@ -9,7 +9,7 @@ import {
 } from './util'
 
 
-function _GlobSync (patterns, options, shouldIgnore) {
+function _GlobSync (patterns, options, shouldIgnore) { console.log(arguments)
 
   this[IGNORE] = shouldIgnore
   GlobSync.call(this, patterns, options)
@@ -44,10 +44,11 @@ See: https://github.com/isaacs/node-glob/issues/167`)
   }
 
   options = Object.assign({}, options)
+  const cwd = options.cwd = options.cwd || process.cwd()
   const {
     ignore,
-    filter
-  } = createShouldIgnore(options.ignore)
+    filter,
+  } = createShouldIgnore(options.ignore, cwd)
   delete options.ignore
 
   return new _GlobSync(patterns, options, ignore)
