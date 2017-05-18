@@ -28,7 +28,13 @@ inherits(_Glob, Glob)
 
 
 _Glob.prototype._readdir = function (abs, inGlobStar, cb) {
+  const marked = this._mark(abs)
 
+  if (this[IGNORE] && this[IGNORE](marked)) {
+    return cb()
+  }
+
+  return Glob.prototype._readdir.call(this, abs, inGlobStar, cb)
 }
 
 
@@ -46,17 +52,30 @@ export function glob (patterns, options = {}, callback) {
     return sync(patterns, options)
   }
 
+  const {
+    ignore,
+    filter,
+    opts
+  } = createShouldIgnore(options)
+
   if (callback) {
-    return new _Glob(patterns, options, callback)
+    return new _Glob(patterns, opts, (err, files) => {
+      if (err) {
+        return callback(err)
+      }
+
+      callback(null, files.filter(filter))
+
+    }, ignore)
   }
 
   return new Promise((resolve, reject) => {
-    new _Glob(patterns, options, (err, files) => {
+    new _Glob(patterns, opts, (err, files) => {
       if (err) {
         return reject(err)
       }
 
-      resolve(files)
-    })
+      resolve(files.filter(filter))
+    }, ignore)
   })
 }

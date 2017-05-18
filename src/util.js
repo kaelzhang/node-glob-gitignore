@@ -11,7 +11,16 @@ function relative (abs, cwd) {
 }
 
 
-export function createShouldIgnore (ignores, cwd) {
+export function createShouldIgnore (options) {
+  const opts = Object.assign({}, options)
+
+  const {
+    ignore: ignores,
+    cwd = process.cwd()
+  } = opts
+
+  delete opts.ignore
+
   if (!ignores) {
     return
   }
@@ -33,6 +42,7 @@ export function createShouldIgnore (ignores, cwd) {
       return !filter(filepath)
     },
 
-    filter
+    filter,
+    opts
   }
 }

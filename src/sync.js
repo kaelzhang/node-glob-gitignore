@@ -9,7 +9,7 @@ import {
 } from './util'
 
 
-function _GlobSync (patterns, options, shouldIgnore) { console.log(arguments)
+function _GlobSync (patterns, options, shouldIgnore) {
 
   this[IGNORE] = shouldIgnore
   GlobSync.call(this, patterns, options)
@@ -36,22 +36,20 @@ _GlobSync.prototype._readdir = function (abs, inGlobStar) {
 
 
 
-export function sync (patterns, options) {
+export function sync (patterns, options = {}) {
 
   if (typeof options === 'function' || arguments.length === 3) {
     throw new TypeError(`callback provided to sync glob
 See: https://github.com/isaacs/node-glob/issues/167`)
   }
 
-  options = Object.assign({}, options)
-  const cwd = options.cwd = options.cwd || process.cwd()
   const {
     ignore,
     filter,
-  } = createShouldIgnore(options.ignore, cwd)
-  delete options.ignore
+    opts
+  } = createShouldIgnore(options)
 
-  return new _GlobSync(patterns, options, ignore)
+  return new _GlobSync(patterns, opts, ignore)
   .found
   // _GlobSync only filters _readdir, so glob results should be filtered again.
   .filter(filter)
