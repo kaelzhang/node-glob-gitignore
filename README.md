@@ -81,6 +81,8 @@ glob(['*.js', 'a/**', '!a/**/*.png']).then(console.log)
 
 Could be a `String`, an array of `String`s, or an instance of [node-`ignore`](https://www.npmjs.com/package/ignore)
 
+Not setting this is kind of silly, since that's the whole purpose of this lib, but it is optional though.
+
 ```js
 glob('**', {ignore: '*.js'})
 glob('**', {ignore: ['*.css', '*.styl']})

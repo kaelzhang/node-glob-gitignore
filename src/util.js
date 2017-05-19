@@ -29,7 +29,11 @@ const createShouldIgnore = options => {
   delete opts.ignore
 
   if (!ignores) {
-    return
+    return {
+      ignore: () => false,
+      filter: () => true,
+      opts
+    }
   }
 
   if (typeof ignores === 'function') {

@@ -30,6 +30,11 @@ const CASES = [
   p: ['*.js', 'a/**/*.js', '!a/a/a/*.js', '!a/a/*.js'],
   i: ['b.js'],
   r: ['a.js', 'a/a.js']
+},
+{
+  d: 'without ignore',
+  p: ['**/a.js'],
+  r: ['a.js', 'a/a.js', 'a/a/a.js', 'a/a/a/a.js']
 }
 ]
 
