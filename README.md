@@ -14,7 +14,7 @@
 
 # glob-gitignore
 
-Extends [`glob`](https://www.npmjs.com/package/glob) with support for filtering files according to gitignore rules and exposes an optional Promise API
+Extends [`glob`](https://www.npmjs.com/package/glob) with support for filtering files according to gitignore rules and exposes an optional Promise API, based on [`node-ignore`](https://www.npmjs.com/package/ignore).
 
 ## Install
 
@@ -40,11 +40,16 @@ glob('**', {
 })
 
 // And glob-gitignore returns a promise
-// if there is no `callback` passed into function `glob`
 .then(files => {
   console.log(files)
 })
 ```
+
+## Why
+
+1. The `options.ignore` of `node-glob` does not support gitignore rules.
+
+2. It is better **NOT** glob things then filter them with [`node-ignore`](), to filter out files according to gitignore.
 
 ## License
 

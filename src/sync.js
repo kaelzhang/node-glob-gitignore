@@ -5,14 +5,14 @@ import {
 import inherits from 'util.inherits'
 import {
   IGNORE,
-  createShouldIgnore
+  createTasks
 } from './util'
 
 
-function _GlobSync (patterns, options, shouldIgnore) {
+function _GlobSync (pattern, options, shouldIgnore) {
 
   this[IGNORE] = shouldIgnore
-  GlobSync.call(this, patterns, options)
+  GlobSync.call(this, pattern, options)
 }
 
 inherits(_GlobSync, GlobSync)
@@ -35,22 +35,23 @@ _GlobSync.prototype._readdir = function (abs, inGlobStar) {
 }
 
 
-
-export function sync (patterns, options = {}) {
-
-  if (typeof options === 'function' || arguments.length === 3) {
-    throw new TypeError(`callback provided to sync glob
-See: https://github.com/isaacs/node-glob/issues/167`)
-  }
+export function sync (_patterns, options = {}) {
 
   const {
+    join,
+    patterns,
     ignore,
-    filter,
-    opts
-  } = createShouldIgnore(options)
+    opts,
+    result
+  } = createTasks(_patterns, options)
 
-  return new _GlobSync(patterns, opts, ignore)
-  .found
-  // _GlobSync only filters _readdir, so glob results should be filtered again.
-  .filter(filter)
+  if (result) {
+    return result
+  }
+
+  const groups = patterns.map(
+    pattern => new _GlobSync(pattern, opts, ignore).found
+  )
+
+  return join(groups)
 }

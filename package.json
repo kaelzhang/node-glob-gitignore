@@ -60,8 +60,13 @@
     "rollup": "^0.41.6"
   },
   "dependencies": {
+    "array-union": "^1.0.2",
     "glob": "^7.1.1",
     "ignore": "^3.3.0",
+    "lodash.difference": "^4.5.0",
+    "lodash.union": "^4.6.0",
+    "lodash.unionby": "^4.8.0",
+    "make-array": "^1.0.2",
     "util.inherits": "^1.0.1"
   }
 }

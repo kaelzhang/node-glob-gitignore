@@ -23,27 +23,15 @@ const CASES = [
 process.chdir(fixture())
 
 const RUNNER = {
-  'glob.then' (patterns, i) {
-    return glob(patterns, {ignore: i})
-  },
-
   glob (patterns, i) {
-    return new Promise((resolve, reject) => {
-      glob(patterns, {ignore: i}, (err, files) => {
-        if (err) {
-          return reject(err)
-        }
-
-        resolve(files)
-      })
-    })
+    return glob(patterns, {ignore: i})
   },
 
   sync (patterns, i) {
     try {
       return Promise.resolve(sync(patterns, {ignore: i}))
     } catch (e) {
-      return Proimse.reject(e)
+      return Promise.reject(e)
     }
   }
 }
@@ -57,7 +45,7 @@ CASES.forEach(({
   e
 }) => {
 
-  ['glob.then', 'glob', 'sync'].forEach(type => {
+  ['glob', 'sync'].forEach(type => {
     test(`${type}: ${d}`, t => {
       return RUNNER[type](p, i)
       .then(
@@ -87,6 +75,7 @@ CASES.forEach(({
         err => {
           if (!e) {
             t.fail('should not fail')
+            console.error(err)
           }
 
           t.is(err.message, e)

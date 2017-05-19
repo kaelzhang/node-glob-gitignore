@@ -5,7 +5,7 @@ import {
 import inherits from 'util.inherits'
 import {
   IGNORE,
-  createShouldIgnore
+  createTasks
 } from './util'
 
 
@@ -14,14 +14,14 @@ import {
 // @param {Object}     options      `options` for `glob`
 // @param {function()} shouldIgnore Method to check whether a directory should be ignored.
 // @constructor
-function _Glob (patterns, options, callback, shouldIgnore) {
+function _Glob (pattern, options, callback, shouldIgnore) {
 
   // We don't put this thing to argument `options` to avoid
   // further problems, such as `options` validation.
 
   // Use `Symbol` as much as possible to avoid confliction.
   this[IGNORE] = shouldIgnore
-  Glob.call(this, patterns, options, callback)
+  Glob.call(this, pattern, options, callback)
 }
 
 inherits(_Glob, Glob)
@@ -38,44 +38,38 @@ _Glob.prototype._readdir = function (abs, inGlobStar, cb) {
 }
 
 
-export function glob (patterns, options = {}, callback) {
-  if (typeof options === 'function') {
-    callback = options
-    options = {}
-  }
-
-  if (options.sync) {
-    if (cb) {
-      throw new TypeError('callback provided to sync glob')
-    }
-
-    return sync(patterns, options)
-  }
-
-  const {
-    ignore,
-    filter,
-    opts
-  } = createShouldIgnore(options)
-
-  if (callback) {
-    return new _Glob(patterns, opts, (err, files) => {
-      if (err) {
-        return callback(err)
-      }
-
-      callback(null, files.filter(filter))
-
-    }, ignore)
-  }
-
+function globOne (pattern, opts, ignore) {
   return new Promise((resolve, reject) => {
-    new _Glob(patterns, opts, (err, files) => {
+    new _Glob(pattern, opts, (err, files) => {
       if (err) {
         return reject(err)
       }
 
-      resolve(files.filter(filter))
+      resolve(files)
     }, ignore)
   })
+}
+
+
+export function glob (_patterns, options = {}) {
+  if (options.sync) {
+    return sync(_patterns, options)
+  }
+
+  const {
+    patterns,
+    ignore,
+    join,
+    opts,
+    result
+  } = createTasks(_patterns, options)
+
+  if (result) {
+    return Promise.resolve(result)
+  }
+
+  return Promise.all(
+    patterns.map(pattern => globOne(pattern, opts, ignore))
+  )
+  .then(join)
 }
