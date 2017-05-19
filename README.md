@@ -25,9 +25,9 @@ $ npm i glob-gitignore --save
 ## Usage
 
 ```js
-const {
+import {
   glob
-} = require('glob-gitignore')
+} from 'glob-gitignore'
 
 // The usage of glob-gitignore is much the same as `node-glob`
 glob('**', {
