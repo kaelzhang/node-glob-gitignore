@@ -35,6 +35,11 @@ const CASES = [
   d: 'without ignore',
   p: ['**/a.js'],
   r: ['a.js', 'a/a.js', 'a/a/a.js', 'a/a/a/a.js']
+},
+{
+  d: 'only negative',
+  p: ['!**/a.js'],
+  r: []
 }
 ]
 
