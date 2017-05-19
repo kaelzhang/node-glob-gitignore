@@ -17,6 +17,18 @@ const CASES = [
   p: '**/*.js',
   i: 'a.js',
   r: ['b.js', 'a/b.js', 'a/a/b.js', 'a/a/a/b.js']
+},
+{
+  d: 'patterns',
+  p: ['*.js', 'a/*.js'],
+  i: ['b.js'],
+  r: ['a.js', 'a/a.js']
+},
+{
+  d: 'patterns with negatives',
+  p: ['*.js', 'a/**/*.js', '!a/a/a/*.js', '!a/a/*.js'],
+  i: ['b.js'],
+  r: ['a.js', 'a/a.js']
 }
 ]
 
@@ -38,15 +50,28 @@ const RUNNER = {
 
 
 CASES.forEach(({
+  // description
   d,
+  // patterns
   p,
+  // ignore
   i,
+  // result
   r,
-  e
+  // error
+  e,
+  // only
+  o
 }) => {
 
   ['glob', 'sync'].forEach(type => {
-    test(`${type}: ${d}`, t => {
+    const _test = o === true
+      ? test.only
+      : o === type
+        ? test.only
+        : test
+
+    _test(`${type}: ${d}`, t => {
       return RUNNER[type](p, i)
       .then(
         files => {
@@ -56,6 +81,12 @@ CASES.forEach(({
           }
 
           t.deepEqual(files.sort(), r.sort(), 'fails to compare expected')
+
+          // Only race for string pattern.
+          if (typeof p !== 'string') {
+            return
+          }
+
           return new Promise((resolve, reject) => {
             vanilla(p, (err, f) => {
               if (err) {
@@ -68,8 +99,6 @@ CASES.forEach(({
               resolve()
             })
           })
-
-
         },
 
         err => {

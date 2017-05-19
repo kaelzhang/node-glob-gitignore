@@ -114,7 +114,7 @@ export const createTasks = (patterns, options) => {
           : positives.push(files)
       })
 
-      return difference(union(positives), negatives)
+      return difference(union(...positives), ...negatives)
       .filter(filter)
     },
 

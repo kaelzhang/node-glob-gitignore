@@ -26,7 +26,8 @@ $ npm i glob-gitignore --save
 
 ```js
 import {
-  glob
+  glob,
+  sync
 } from 'glob-gitignore'
 
 // The usage of glob-gitignore is much the same as `node-glob`
@@ -43,13 +44,41 @@ glob('**', {
 .then(files => {
   console.log(files)
 })
+
+// To glob things synchronously, use `sync`
+const files = sync('**', {ignore: '*.bak'})
 ```
 
 ## Why
 
 1. The `options.ignore` of `node-glob` does not support gitignore rules.
 
-2. It is better **NOT** glob things then filter them with [`node-ignore`](), to filter out files according to gitignore.
+2. It is better **NOT** glob things then filter them with [`node-ignore`](), to filter out files according to gitignore. Because by doing this, there will be so much unnecessary harddisk traversing, and cause performance issues, especially if there are tremendous files and directories inside the working directory.
+
+`glob-gitignore` does the filtering at the very process of each decending down.
+
+## glob(patterns, options)
+
+Returns a `Promise`
+
+- **patterns** `String|Array.<String>` The pattern or array of patterns to be matched.
+
+And negative patterns (each of which starts with an `!`) are supported, although negative patterns are **NOT** recommended. You'd better to use `options.ignore`.
+
+```js
+glob(['*.js', 'a/**', '!a/**/*.png']).then(console.log)
+```
+
+- **options** `Object` the [glob options](https://www.npmjs.com/package/glob#options) except for `options.ignore`
+
+### `options.ignore`
+
+Could be a `String`, an array of `String`s, or an instance of [node-`ignore`](https://www.npmjs.com/package/ignore)
+
+
+## sync(patterns, options)
+
+The synchronous globber, which returns an `Array.<path>`.
 
 ## License
 
