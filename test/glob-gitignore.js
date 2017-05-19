@@ -1,7 +1,8 @@
 import test from 'ava'
 import {
   glob,
-  sync
+  sync,
+  hasMagic
 } from '../src'
 
 import vanilla from 'glob'
@@ -113,3 +114,11 @@ CASES.forEach(({
     })
   })
 })
+
+
+test('hasMagic', t => {
+  t.is(hasMagic('a/{b/c,x/y}'), true)
+  t.is(hasMagic(['a/{b/c,x/y}']), true)
+  t.is(hasMagic('a'), false)
+})
+

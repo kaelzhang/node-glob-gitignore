@@ -27,11 +27,13 @@ $ npm i glob-gitignore --save
 ```js
 import {
   glob,
-  sync
+  sync,
+  hasMagic
 } from 'glob-gitignore'
 
-// The usage of glob-gitignore is much the same as `node-glob`
-glob('**', {
+// The usage of glob-gitignore is much the same as `node-glob`,
+// and it supports an array of patterns to be matched
+glob(['**'], {
   cwd: '/path/to',
 
   // Except that options.ignore accepts an array of gitignore rules,
@@ -39,14 +41,18 @@ glob('**', {
   // or an `ignore` instance.
   ignore: '*.bak'
 })
-
 // And glob-gitignore returns a promise
 .then(files => {
   console.log(files)
 })
 
+// A string of pattern is also supported.
+glob('**', options)
+
 // To glob things synchronously, use `sync`
 const files = sync('**', {ignore: '*.bak'})
+
+hasMagic('a/{b/c,x/y}')  // true
 ```
 
 ## Why
@@ -75,10 +81,36 @@ glob(['*.js', 'a/**', '!a/**/*.png']).then(console.log)
 
 Could be a `String`, an array of `String`s, or an instance of [node-`ignore`](https://www.npmjs.com/package/ignore)
 
+```js
+glob('**', {ignore: '*.js'})
+glob('**', {ignore: ['*.css', '*.styl']})
+
+import ignore from 'ignore'
+glob('**', {
+  ignore: ignore().add('*.js')
+})
+```
 
 ## sync(patterns, options)
 
 The synchronous globber, which returns an `Array.<path>`.
+
+## hasMagic(patterns, [options])
+
+This method extends `glob.hasMagic(pattern)` and supports an array of patterns.
+
+Returns
+
+- `true` if there are any special characters in the pattern, or there is any of a pattern in the array has special characters.
+- `false` otherwise.
+
+```js
+hasMagic('a/{b/c,x/y}')               // true
+hasMagic(['a/{b/c,x/y}', 'a'])        // true
+hasMagic(['a'])                       // false
+```
+
+Note that the options affect the results. If `noext:true` is set in the options object, then `+(a|b)` will not be considered a magic pattern. If the pattern has a brace expansion, like `a/{b/c,x/y}` then that is considered magical, unless `nobrace:true` is set in the options.
 
 ## License
 
