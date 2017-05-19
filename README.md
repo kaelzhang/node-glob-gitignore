@@ -59,7 +59,7 @@ hasMagic('a/{b/c,x/y}')  // true
 
 1. The `options.ignore` of `node-glob` does not support gitignore rules.
 
-2. It is better **NOT** to glob things then filter them with [`node-ignore`](). Because by doing this, there will be so much unnecessary harddisk traversing, and cause performance issues, especially if there are tremendous files and directories inside the working directory.
+2. It is better **NOT** to glob things then filter them by gitignore rules. Because by doing this, there will be so much unnecessary harddisk traversing, and cause performance issues, especially if there are tremendous files and directories inside the working directory. For the situation, you'd better to use this module.
 
 `glob-gitignore` does the filtering at the very process of each decending down.
 
