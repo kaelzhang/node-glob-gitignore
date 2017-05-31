@@ -1,6 +1,6 @@
 {
   "name": "glob-gitignore",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Extends `glob` with support for filtering files according to gitignore rules and exposes an optional Promise API",
   "main": "lib/index.js",
   "module": "src/index.js",
@@ -60,6 +60,7 @@
     "rollup": "^0.41.6"
   },
   "dependencies": {
+    "babel-runtime": "^6.23.0",
     "glob": "^7.1.1",
     "ignore": "^3.3.0",
     "lodash.difference": "^4.5.0",
