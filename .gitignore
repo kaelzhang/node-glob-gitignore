@@ -19,6 +19,8 @@
 *.rdb
 *.db
 nohup.out
+package-lock.json
+*.tgz
 
 # OS or Editor folders
 .DS_Store
