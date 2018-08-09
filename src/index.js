@@ -1,15 +1,15 @@
-export {
-  sync
-} from './sync'
+const make_array = require('make-array')
+const vanilla = require('glob')
 
-export {
-  glob
-} from './glob'
+const {sync} = require('./sync')
+const {glob} = require('./glob')
 
-
-import glob from 'glob'
-import make_array from 'make-array'
-
-export const hasMagic = (patterns, options) =>
+const hasMagic = (patterns, options) =>
   make_array(patterns)
-  .some(pattern => glob.hasMagic(pattern, options))
+  .some(pattern => vanilla.hasMagic(pattern, options))
+
+module.exports = {
+  sync,
+  glob,
+  hasMagic
+}

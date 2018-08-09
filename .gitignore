@@ -54,3 +54,5 @@ tmp/
 
 # codecov.io
 coverage/
+.nyc_output
+*.lcov

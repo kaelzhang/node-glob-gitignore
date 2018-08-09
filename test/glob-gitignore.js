@@ -1,46 +1,45 @@
-import test from 'ava'
-import {
+const test = require('ava')
+const vanilla = require('glob')
+const ignore = require('ignore')
+const path = require('path')
+
+const {
   glob,
   sync,
   hasMagic
-} from '../src'
-
-import vanilla from 'glob'
-import ignore from 'ignore'
-
-import path from 'path'
+} = require('../src')
 
 const fixture = (filepath = '') => path.join(__dirname, 'fixtures', filepath)
 
 const CASES = [
-{
-  d: 'basic',
-  p: '**/*.js',
-  i: 'a.js',
-  r: ['b.js', 'a/b.js', 'a/a/b.js', 'a/a/a/b.js']
-},
-{
-  d: 'patterns',
-  p: ['*.js', 'a/*.js'],
-  i: ['b.js'],
-  r: ['a.js', 'a/a.js']
-},
-{
-  d: 'patterns with negatives',
-  p: ['*.js', 'a/**/*.js', '!a/a/a/*.js', '!a/a/*.js'],
-  i: ['b.js'],
-  r: ['a.js', 'a/a.js']
-},
-{
-  d: 'without ignore',
-  p: ['**/a.js'],
-  r: ['a.js', 'a/a.js', 'a/a/a.js', 'a/a/a/a.js']
-},
-{
-  d: 'only negative',
-  p: ['!**/a.js'],
-  r: []
-}
+  {
+    d: 'basic',
+    p: '**/*.js',
+    i: 'a.js',
+    r: ['b.js', 'a/b.js', 'a/a/b.js', 'a/a/a/b.js']
+  },
+  {
+    d: 'patterns',
+    p: ['*.js', 'a/*.js'],
+    i: ['b.js'],
+    r: ['a.js', 'a/a.js']
+  },
+  {
+    d: 'patterns with negatives',
+    p: ['*.js', 'a/**/*.js', '!a/a/a/*.js', '!a/a/*.js'],
+    i: ['b.js'],
+    r: ['a.js', 'a/a.js']
+  },
+  {
+    d: 'without ignore',
+    p: ['**/a.js'],
+    r: ['a.js', 'a/a.js', 'a/a/a.js', 'a/a/a/a.js']
+  },
+  {
+    d: 'only negative',
+    p: ['!**/a.js'],
+    r: []
+  }
 ]
 
 process.chdir(fixture())
@@ -53,6 +52,14 @@ const RUNNER = {
   sync (patterns, i) {
     try {
       return Promise.resolve(sync(patterns, {ignore: i}))
+    } catch (e) {
+      return Promise.reject(e)
+    }
+  },
+
+  options_sync (patterns, i) {
+    try {
+      return Promise.resolve(glob(patterns, {ignore: i, sync: true}))
     } catch (e) {
       return Promise.reject(e)
     }
@@ -74,16 +81,15 @@ CASES.forEach(({
   // only
   o
 }) => {
-
-  ['glob', 'sync'].forEach(type => {
+  ['glob', 'sync', 'options_sync'].forEach(type => {
     const _test = o === true
       ? test.only
       : o === type
         ? test.only
         : test
 
-    _test(`${type}: ${d}`, t => {
-      return RUNNER[type](p, i)
+    _test(`${type}: ${d}`, t =>
+      RUNNER[type](p, i)
       .then(
         files => {
           if (e) {
@@ -115,13 +121,14 @@ CASES.forEach(({
         err => {
           if (!e) {
             t.fail('should not fail')
+            /* eslint no-console: 'off' */
             console.error(err)
           }
 
           t.is(err.message, e)
         }
       )
-    })
+    )
   })
 })
 
@@ -132,3 +139,10 @@ test('hasMagic', t => {
   t.is(hasMagic('a'), false)
 })
 
+test('error', async t => {
+  t.throws(() => {
+    glob('', {
+      cwd: __dirname
+    }, TypeError)
+  })
+})

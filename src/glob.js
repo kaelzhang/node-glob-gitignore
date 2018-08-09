@@ -1,13 +1,10 @@
-import {
-  Glob
-} from 'glob'
-
-import inherits from 'util.inherits'
-import {
+const {Glob} = require('glob')
+const inherits = require('util.inherits')
+const {
   IGNORE,
   createTasks
-} from './util'
-
+} = require('./util')
+const {sync} = require('./sync')
 
 // Subclass of `glob.GlobSync`
 // @param {string}     pattern      Pattern to be matched.
@@ -15,7 +12,6 @@ import {
 // @param {function()} shouldIgnore Method to check whether a directory should be ignored.
 // @constructor
 function _Glob (pattern, options, callback, shouldIgnore) {
-
   // We don't put this thing to argument `options` to avoid
   // further problems, such as `options` validation.
 
@@ -26,8 +22,7 @@ function _Glob (pattern, options, callback, shouldIgnore) {
 
 inherits(_Glob, Glob)
 
-
-_Glob.prototype._readdir = function (abs, inGlobStar, cb) {
+_Glob.prototype._readdir = function _readdir (abs, inGlobStar, cb) {
   const marked = this._mark(abs)
 
   if (this[IGNORE] && this[IGNORE](marked)) {
@@ -36,7 +31,6 @@ _Glob.prototype._readdir = function (abs, inGlobStar, cb) {
 
   return Glob.prototype._readdir.call(this, abs, inGlobStar, cb)
 }
-
 
 function globOne (pattern, opts, ignore) {
   return new Promise((resolve, reject) => {
@@ -50,15 +44,14 @@ function globOne (pattern, opts, ignore) {
   })
 }
 
-
-export function glob (_patterns, options = {}) {
+exports.glob = (_patterns, options = {}) => {
   if (options.sync) {
     return sync(_patterns, options)
   }
 
   const {
     patterns,
-    ignore,
+    ignores,
     join,
     opts,
     result
@@ -69,7 +62,7 @@ export function glob (_patterns, options = {}) {
   }
 
   return Promise.all(
-    patterns.map(pattern => globOne(pattern, opts, ignore))
+    patterns.map(pattern => globOne(pattern, opts, ignores))
   )
   .then(join)
 }

@@ -1,17 +1,14 @@
-export const IGNORE = typeof Symbol === 'function'
+const ignore = require('ignore')
+const path = require('path')
+const difference = require('lodash.difference')
+const union = require('lodash.union')
+const make_array = require('make-array')
+
+const IGNORE = typeof Symbol === 'function'
   ? Symbol('ignore')
   : '_shouldIgnore'
 
-
-import ignore from 'ignore'
-import path from 'path'
-import difference from 'lodash.difference'
-import union from 'lodash.union'
-import make_array from 'make-array'
-
-function relative (abs, cwd) {
-  return path.relative(cwd, abs)
-}
+const relative = (abs, cwd) => path.relative(cwd, abs)
 
 const createShouldIgnore = options => {
   const opts = Object.assign({
@@ -36,15 +33,11 @@ const createShouldIgnore = options => {
     }
   }
 
-  if (typeof ignores === 'function') {
-    return ignores
-  }
-
   const ig = ignore().add(ignores)
   const filter = ig.createFilter()
 
   return {
-    ignore: filepath => {
+    ignores: filepath => {
       filepath = relative(filepath, cwd)
       if (!filepath) {
         return false
@@ -59,12 +52,12 @@ const createShouldIgnore = options => {
 }
 
 const isNegative = pattern => pattern[0] === '!'
-const isString = subject => typeof subject === 'string'
+const isPattern = subject => subject && typeof subject === 'string'
 
-export const createTasks = (patterns, options) => {
+const createTasks = (patterns, options) => {
   patterns = make_array(patterns)
 
-  if (!patterns.length || !patterns.every(isString)) {
+  if (!patterns.length || !patterns.every(isPattern)) {
     throw new TypeError('patterns must be a string or an array of strings')
   }
 
@@ -90,7 +83,7 @@ export const createTasks = (patterns, options) => {
   const {
     opts,
     filter,
-    ignore
+    ignores
   } = createShouldIgnore(options)
 
   // Only one positive pattern
@@ -103,7 +96,7 @@ export const createTasks = (patterns, options) => {
 
       patterns,
       opts,
-      ignore
+      ignores
     }
   }
 
@@ -113,6 +106,7 @@ export const createTasks = (patterns, options) => {
       const negatives = []
 
       fileGroups.forEach((files, i) => {
+        /* eslint no-unused-expressions: 'off' */
         negativeFlags[i]
           ? negatives.push(files)
           : positives.push(files)
@@ -126,4 +120,9 @@ export const createTasks = (patterns, options) => {
     opts,
     ignore
   }
+}
+
+module.exports = {
+  IGNORE,
+  createTasks
 }

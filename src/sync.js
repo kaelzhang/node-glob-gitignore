@@ -1,30 +1,25 @@
-import {
-  GlobSync
-} from 'glob'
-
-import inherits from 'util.inherits'
-import {
+const {GlobSync} = require('glob')
+const inherits = require('util.inherits')
+const {
   IGNORE,
   createTasks
-} from './util'
-
+} = require('./util')
 
 function _GlobSync (pattern, options, shouldIgnore) {
-
   this[IGNORE] = shouldIgnore
   GlobSync.call(this, pattern, options)
 }
 
 inherits(_GlobSync, GlobSync)
 
-
-_GlobSync.prototype._readdir = function (abs, inGlobStar) {
-
+_GlobSync.prototype._readdir = function _readdir (abs, inGlobStar) {
   // `options.nodir` makes `options.mark` as `true`.
   // Mark `abs` first
-  // to make sure `'node_modules'` will be ignored immediately with ignore pattern `'node_modules/'`.
+  // to make sure `'node_modules'` will be ignored immediately
+  //   with ignore pattern `'node_modules/'`.
 
-  // There is a built-in cache about marked `File.Stat` in `glob`, so that we could not worry about the extra invocation of `this._mark()`
+  // There is a built-in cache about marked `File.Stat` in `glob`,
+  //   so that we could not worry about the extra invocation of `this._mark()`
   const marked = this._mark(abs)
 
   if (this[IGNORE] && this[IGNORE](marked)) {
@@ -34,13 +29,11 @@ _GlobSync.prototype._readdir = function (abs, inGlobStar) {
   return GlobSync.prototype._readdir.call(this, abs, inGlobStar)
 }
 
-
-export function sync (_patterns, options = {}) {
-
+exports.sync = (_patterns, options = {}) => {
   const {
     join,
     patterns,
-    ignore,
+    ignores,
     opts,
     result
   } = createTasks(_patterns, options)
@@ -50,7 +43,7 @@ export function sync (_patterns, options = {}) {
   }
 
   const groups = patterns.map(
-    pattern => new _GlobSync(pattern, opts, ignore).found
+    pattern => new _GlobSync(pattern, opts, ignores).found
   )
 
   return join(groups)
