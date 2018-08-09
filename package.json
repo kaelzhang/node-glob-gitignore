@@ -1,9 +1,8 @@
 {
   "name": "glob-gitignore",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "Extends `glob` with support for filtering files according to gitignore rules and exposes an optional Promise API",
-  "main": "lib/index.js",
-  "module": "src/index.js",
+  "main": "src/index.js",
   "scripts": {
     "test": "nyc ava --timeout=10s",
     "test-no-report": "NODE_DEBUG=ignore-nested nyc ava --timeout=10s --verbose",
@@ -11,7 +10,6 @@
     "posttest": "nyc report --reporter=text-lcov > coverage.lcov && codecov"
   },
   "files": [
-    "lib/",
     "src/"
   ],
   "repository": {

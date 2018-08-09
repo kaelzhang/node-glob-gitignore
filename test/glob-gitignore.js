@@ -7,7 +7,7 @@ const {
   glob,
   sync,
   hasMagic
-} = require('../src')
+} = require('..')
 
 const fixture = (filepath = '') => path.join(__dirname, 'fixtures', filepath)
 
