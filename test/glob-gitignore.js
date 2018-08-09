@@ -139,7 +139,7 @@ test('hasMagic', t => {
   t.is(hasMagic('a'), false)
 })
 
-test('error', async t => {
+test('error', t => {
   t.throws(() => {
     glob('', {
       cwd: __dirname
