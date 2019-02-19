@@ -16,6 +16,8 @@
 
 Extends [`glob`](https://www.npmjs.com/package/glob) with support for filtering files according to gitignore rules and exposes an optional Promise API, based on [`node-ignore`](https://www.npmjs.com/package/ignore).
 
+This module is built to solve performance issues, see [Why](#why).
+
 ## Install
 
 ```sh
