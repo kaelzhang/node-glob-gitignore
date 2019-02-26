@@ -1,6 +1,6 @@
 {
   "name": "glob-gitignore",
-  "version": "1.0.13",
+  "version": "1.0.14",
   "description": "Extends `glob` with support for filtering files according to gitignore rules and exposes an optional Promise API with NO performance issues",
   "main": "src/index.js",
   "scripts": {

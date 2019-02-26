@@ -34,18 +34,25 @@ const createShouldIgnore = options => {
   }
 
   const ig = ignore().add(ignores)
-  const filter = ig.createFilter()
+  const _filter = ig.createFilter()
+
+  const filterABS = f => {
+    const filepath = relative(f, cwd)
+    if (!filepath) {
+      return true
+    }
+
+    return _filter(filepath)
+  }
+
+  const filter = options.absolute
+    ? filterABS
+    : _filter
 
   return {
-    ignores: filepath => {
-      filepath = relative(filepath, cwd)
-      if (!filepath) {
-        return false
-      }
-
-      return !filter(filepath)
-    },
-
+    // Check directories during traversing
+    ignores: f => !filterABS(f),
+    // Filter result
     filter,
     opts
   }
@@ -90,7 +97,8 @@ const createTasks = (patterns, options) => {
   if (positivesCount === 1) {
     return {
       join ([files]) {
-        // _GlobSync only filters _readdir, so glob results should be filtered again.
+        // _GlobSync only filters _readdir,
+        // so glob results should be filtered again.
         return files.filter(filter)
       },
 
@@ -113,6 +121,7 @@ const createTasks = (patterns, options) => {
       })
 
       return difference(union(...positives), ...negatives)
+      // The same reason as above
       .filter(filter)
     },
 

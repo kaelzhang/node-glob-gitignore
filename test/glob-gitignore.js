@@ -42,32 +42,38 @@ const CASES = [
   }
 ]
 
-process.chdir(fixture())
+const DIR = fixture()
+const ABS = f => path.join(DIR, f)
+
+process.chdir(DIR)
 
 const RUNNER = {
-  glob (patterns, i) {
-    return glob(patterns, {ignore: i})
+  glob (patterns, i, options) {
+    return glob(patterns, Object.assign({ignore: i}, options))
   },
 
-  sync (patterns, i) {
+  sync (patterns, i, options) {
     try {
-      return Promise.resolve(sync(patterns, {ignore: i}))
+      return Promise.resolve(
+        sync(patterns, Object.assign({ignore: i}, options))
+      )
     } catch (e) {
       return Promise.reject(e)
     }
   },
 
-  options_sync (patterns, i) {
+  options_sync (patterns, i, options) {
     try {
-      return Promise.resolve(glob(patterns, {ignore: i, sync: true}))
+      return Promise.resolve(
+        glob(patterns, Object.assign({ignore: i, sync: true}, options))
+      )
     } catch (e) {
       return Promise.reject(e)
     }
   }
 }
 
-
-CASES.forEach(({
+const run = ({
   // description
   d,
   // patterns
@@ -79,56 +85,100 @@ CASES.forEach(({
   // error
   e,
   // only
+  only,
+  // options
   o
-}) => {
-  ['glob', 'sync', 'options_sync'].forEach(type => {
-    const _test = o === true
+}, type,
+
+// Extra config
+{
+  desc = '',
+  absolute = false
+} = {}) => {
+  const _test = only === true
+    ? test.only
+    : only === type
       ? test.only
-      : o === type
-        ? test.only
-        : test
+      : test
 
-    _test(`${type}: ${d}`, t =>
-      RUNNER[type](p, i)
-      .then(
-        files => {
-          if (e) {
-            t.fail('error expected')
-            return
-          }
+  const extra_desc = desc
+    ? `, ${desc}`
+    : ''
 
-          t.deepEqual(files.sort(), r.sort(), 'fails to compare expected')
+  const options = absolute
+    ? Object.assign({
+      absolute: true,
+      o
+    })
+    : o
 
-          // Only race for string pattern.
-          if (typeof p !== 'string') {
-            return
-          }
-
-          return new Promise((resolve, reject) => {
-            vanilla(p, (err, f) => {
-              if (err) {
-                return reject(err)
-              }
-
-              const filter = ignore().add(i).createFilter()
-
-              t.deepEqual(files.sort(), f.filter(filter).sort(), 'race with node-glob')
-              resolve()
-            })
-          })
-        },
-
-        err => {
-          if (!e) {
-            t.fail('should not fail')
-            /* eslint no-console: 'off' */
-            console.error(err)
-          }
-
-          t.is(err.message, e)
+  _test(`${type}: ${d}${extra_desc}`, t =>
+    RUNNER[type](p, i, options)
+    .then(
+      files => {
+        if (e) {
+          t.fail('error expected')
+          return
         }
-      )
+
+        t.deepEqual(
+          files.sort(),
+          absolute
+            ? r.sort().map(ABS)
+            : r.sort(),
+          'fails to compare expected'
+        )
+
+        // Only race for string pattern.
+        if (typeof p !== 'string') {
+          return
+        }
+
+        return new Promise((resolve, reject) => {
+          vanilla(p, (err, f) => {
+            if (err) {
+              return reject(err)
+            }
+
+            const filter = ignore().add(i).createFilter()
+            const globbed_files = f.filter(filter).sort()
+            const expected = absolute
+              ? globbed_files.map(ABS)
+              : globbed_files
+
+            t.deepEqual(
+              files.sort(),
+              expected,
+              'race with node-glob'
+            )
+            resolve()
+          })
+        })
+      },
+
+      err => {
+        if (!e) {
+          t.fail('should not fail')
+          /* eslint no-console: 'off' */
+          console.error(err)
+        }
+
+        t.is(err.message, e)
+      }
     )
+  )
+}
+
+
+CASES.forEach(c => {
+  ['glob', 'sync', 'options_sync'].forEach(type => {
+    // run(c, type)
+
+    // #5
+    run(c, type, {
+      desc: 'absolute: true',
+      absolute: true
+    })
   })
 })
 
