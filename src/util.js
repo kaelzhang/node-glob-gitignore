@@ -1,7 +1,7 @@
 const ignore = require('ignore')
 const path = require('path')
-const difference = require('lodash.difference')
-const union = require('lodash.union')
+const difference = require('lodash/difference')
+const union = require('lodash/union')
 const make_array = require('make-array')
 
 const IGNORE = typeof Symbol === 'function'
