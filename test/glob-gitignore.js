@@ -16,7 +16,7 @@ const CASES = [
     d: 'basic',
     p: '**/*.js',
     i: 'a.js',
-    r: ['b.js', 'a/b.js', 'a/a/b.js', 'a/a/a/b.js']
+    r: ['b.js', 'a/b.js', 'a/a/b.js', 'a/a/a/b.js', 'b/b.js', 'b/b/b.js', 'b/b/b/b.js']
   },
   {
     d: 'patterns',
@@ -33,12 +33,17 @@ const CASES = [
   {
     d: 'without ignore',
     p: ['**/a.js'],
-    r: ['a.js', 'a/a.js', 'a/a/a.js', 'a/a/a/a.js']
+    r: ['a.js', 'a/a.js', 'a/a/a.js', 'a/a/a/a.js', 'b/a.js', 'b/b/a.js', 'b/b/b/a.js']
   },
   {
     d: 'only negative',
     p: ['!**/a.js'],
     r: []
+  },
+  {
+    d: 'negative prefixed group',
+    p: '!(a)**/*.js',
+    r: ['b/b.js', 'b/a.js']
   }
 ]
 
