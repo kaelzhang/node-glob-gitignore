@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/kaelzhang/node-glob-gitignore.svg?branch=master)](https://travis-ci.org/kaelzhang/node-glob-gitignore)
+[![Build Status](https://github.com/kaelzhang/node-glob-gitignore/actions/workflows/nodejs.yml/badge.svg)](https://github.com/kaelzhang/node-glob-gitignore/actions/workflows/nodejs.yml)
 <!-- optional appveyor tst
 [![Windows Build Status](https://ci.appveyor.com/api/projects/status/github/kaelzhang/node-glob-gitignore?branch=master&svg=true)](https://ci.appveyor.com/project/kaelzhang/node-glob-gitignore)
 -->

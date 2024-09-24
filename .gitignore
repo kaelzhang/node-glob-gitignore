@@ -1,5 +1,6 @@
 # babel dist
 /lib
+*.lcov
 
 # Numerous always-ignore extensions
 *.bak
