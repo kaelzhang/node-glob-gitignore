@@ -58,7 +58,7 @@ const createShouldIgnore = options => {
   }
 }
 
-const isNegative = pattern => pattern[0] === '!'
+const isNegative = pattern => pattern[0] === '!' && pattern[1] !== '('
 const isPattern = subject => subject && typeof subject === 'string'
 
 const createTasks = (patterns, options) => {
